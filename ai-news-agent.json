@@ -1,0 +1,324 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        -80
+      ],
+      "id": "8039f8b1-ea27-4186-98bf-a0a7f5b4d1bd",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://aibusiness.com/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        -368
+      ],
+      "id": "91a2c5bc-75b5-45ac-84e5-2eb89ae02b62",
+      "name": "RSS AI NEWS"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -80
+      ],
+      "id": "2ea8b775-36cd-479d-93e9-3821579be35b",
+      "name": "Data Aggregater"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an AI news summarizer.\n\nUse ONLY the provided input items. Do NOT add or invent any information.\n\nClassify each item strictly into ONE of the following categories:\n\n* AI NEWS\n* TECHNOLOGY UPDATES\n* DEFENCE NEWS UPDATES\n* SSB NEWS UPDATES\n\nRules:\n\n* AI NEWS → Artificial Intelligence, ML, automation\n* TECHNOLOGY UPDATES → General tech (software, apps, gadgets, startups)\n* DEFENCE NEWS UPDATES → Military, weapons, defence policy, armed forces\n* SSB NEWS UPDATES → NDA/CDS/SSB interviews, selection process, defence recruitment\n\nLimits:\n\n* Maximum 3 items per category\n* If a category has no items, write: \"No updates today.\"\n\nFormatting (STRICT):\n\nHi there,\nHere's your Tech Brief:\n\n# AI NEWS\n\n<HEADLINE IN ALL CAPS>  \n<1–2 sentence summary>  \nLink: <URL>\n\n====================================================================\n\n# TECHNOLOGY UPDATES\n\n<HEADLINE IN ALL CAPS>  \n<1–2 sentence summary>  \nLink: <URL>\n\n===================================================================\n\n# DEFENCE NEWS UPDATES\n\n<HEADLINE IN ALL CAPS>  \n<1–2 sentence summary>  \nLink: <URL>\n\n===================================================================\n\n# SSB NEWS UPDATES\n\n<HEADLINE IN ALL CAPS>  \n<1–2 sentence summary>  \nLink: <URL>\n\n===================================================================\n\nStyle:\n\n* Keep summaries concise (max 2 sentences)\n* No emojis\n* No extra commentary\n* Maintain clean spacing between items"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "2029d7bf-3d8e-4826-a826-2b456dafe6b8",
+      "name": "AI Summarization Model"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        808,
+        144
+      ],
+      "id": "418f531a-a0f0-4851-b880-6a68c4cdc24f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "EhmMkkrLwRO7Qrj7",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "bharatdasari777@gmail.com",
+        "subject": "Today's AI News for you...",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        -80
+      ],
+      "id": "df2dfdaf-d864-4bd0-a058-7fdfd8136a5a",
+      "name": "Send a message",
+      "webhookId": "8c8225f8-beae-4c87-9d46-ca6cba67e77f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Fbyh9igpsb4wVARM",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {
+          "customFields": "",
+          "ignoreSSL": false
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        -176
+      ],
+      "id": "76c6dab7-9e63-4dbb-9a5f-a996bc7cac65",
+      "name": "RSS Tech Updates"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        288,
+        -272
+      ],
+      "id": "ce969f4e-4304-4e8a-9e5f-129bc4af7d8d",
+      "name": "Data Merger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.indiandefensenews.in/feeds/posts/default",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        16
+      ],
+      "id": "e8b43701-f2b1-4b12-9b8b-e6280a3cb243",
+      "name": "RSS Defence News"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        288,
+        112
+      ],
+      "id": "1ad3d411-538f-46ef-a59c-2f930a8f0a2d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "https://www.indiandefensenews.in/feeds/posts/default",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        208
+      ],
+      "id": "caefab00-faee-4ca3-9b3b-7d52b8ee7b1c",
+      "name": "RSS Read"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Tech Updates",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS AI NEWS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Defence News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS AI NEWS": {
+      "main": [
+        [
+          {
+            "node": "Data Merger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Aggregater": {
+      "main": [
+        [
+          {
+            "node": "AI Summarization Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Summarization Model",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Summarization Model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Tech Updates": {
+      "main": [
+        [
+          {
+            "node": "Data Merger",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Data Merger": {
+      "main": [
+        [
+          {
+            "node": "Data Aggregater",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Defence News": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Data Aggregater",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5920231c-0df0-4937-a410-679ec6872027",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9512161aa99622a7352fa00d8d2471a0cb04cee33f226ec469e84e0c38594c41"
+  },
+  "id": "Jrk6qSs6WrKgGswf",
+  "tags": []
+}
